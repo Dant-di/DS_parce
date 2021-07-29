@@ -107,15 +107,15 @@ df_1.info()
 
 # SuperJob
 
-# function to parse head hunter
+# function to parse super job
 def parse_sj(soup):
-    name_2.extend([i.text for i in soup.select('._1h3Zg._2rfUm._2hCDz._21a7u ._2JivQ ')])   # get position name
-    vacancy_link_2.extend([i.get('href') for i in soup.select('div._1h3Zg._2rfUm._2hCDz._21a7u a')]) # get position link
+    name_2.extend([i.text for i in soup.select('.f-test-vacancy-item ._2JivQ')])   # get position name
+    vacancy_link_2.extend([i.get('href') for i in soup.select('.f-test-vacancy-item ._2JivQ')]) # get position link
     raw_salaries = [i.text for i in soup.select('._1h3Zg._2Wp8I._2rfUm._2hCDz._2ZsgW')]     # get salaries
 
 # process salaries
     for salary in raw_salaries:
-        source_2.append(url)
+        source_2.append(url_2)
         salary_trimmed = salary.replace(u'\xa0', '')    # replace spaces
         salary_all = re.findall(r"(\d+)", salary_trimmed)   # extract digits
         if len(salary_all) == 2:    # get data if both salaries are present
@@ -159,6 +159,8 @@ else:
         soup = Bs(response.text, 'html5lib')
         parse_sj(soup=soup)
 
+# fix vacancy links
+vacancy_link_2 = [url_2+i for i in vacancy_link_2]
 # create dictionary with data
 data_2 = {
     "Vacancy name": name_2,
@@ -177,6 +179,6 @@ df_2.info()
 parse_results = pd.concat([df_1, df_2], axis=0, ignore_index=True)
 
 # save data to file
-file_name = 'parse_results_jobs.pkl'
-parse_results.to_pickle(file_name)
+file_name = 'parse_results_jobs.csv'
+parse_results.to_csv(file_name, index=False)
 print(f'Данные сохранены в {file_name}')
